@@ -33,13 +33,6 @@ fluidPage(
                      'Double Quote'='"',
                      'Single Quote'="'"),
                    '"'),
-      tags$hr(),
-      p('If you want a sample .csv or .tsv file to upload,',
-        'you can first download the sample',
-        a(href = 'mtcars.csv', 'mtcars.csv'), 'or',
-        a(href = 'pressure.tsv', 'pressure.tsv'),
-        'files, and then try uploading them.'
-      ),
       fileInput('file_shp', 'Upload shapefile',
                 accept = c(
                   '.shp',
@@ -49,7 +42,8 @@ fluidPage(
                   '.shx',
                   '.prj'
                 ), multiple = TRUE
-      )
+      ),
+      downloadButton("Prediction_results.xls", "Download")
     ),
     mainPanel(
       tableOutput('contents'),
