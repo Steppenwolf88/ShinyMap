@@ -47,7 +47,7 @@ fluidPage(
     ),
     mainPanel(
       tableOutput('contents'),
-      plotOutput('SHPplot')
+      leafletOutput('SHPplot')
     )
   )
 )
