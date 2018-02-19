@@ -9,7 +9,7 @@ library(shiny)
 library(maptools)
 library(WriteXLS)
 library(splancs)
-
+library(leaflet)
 # By default, the file size limit is 5MB. It can be changed by
 # setting this option. Here we'll raise limit to 9MB.
 options(shiny.maxRequestSize = 9*1024^2)
@@ -155,32 +155,40 @@ function(input, output) {
     getshp <- list.files(dir, pattern="*.shp", full.names=TRUE)
     shape<-readShapePoly(getshp)
     
-    leaflet() %>% 
-      addProviderTiles("OpenStreetMap.HOT") %>% 
-      setView(lng = 32.5825, lat = 0.3476, zoom = 8) %>%
-      addPolygons(data=shape,fillOpacity = 0,weight=1.5) 
-  })
-  
-  output$plot_prev<- renderLeaflet({
-    myshape<- input$file_shp
-    if (is.null(myshape)) 
-      return(NULL)       
-    
-    dir<-dirname(myshape[1,4])
-    
-    for(i in 1:nrow(myshape)) {
-      file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))
+    if(input$pred=="None") {
+      leaflet() %>% 
+        addProviderTiles("OpenStreetMap.HOT") %>% 
+        setView(lng = 32.5825, lat = 0.3476, zoom = 8) %>%
+        addPolygons(data=shape,fillOpacity = 0,weight=1.5)   
+ 
+    } else {
+      
+      prev <- read.csv("temp_table.csv")
+      
+      if(input$pred=="Prevalence") {
+        shape$output.pred <- prev$Estimates
+        
+        bins <- seq(0,1,0.1)
+        pal <- colorBin("YlOrRd", domain = shape$output.pred, bins = bins)
+        
+        title.leg <- "Prevalence"
+        
+        leaflet() %>% 
+          addProviderTiles("OpenStreetMap.HOT") %>% 
+          setView(lng = 32.5825, lat = 0.3476, zoom = 8) %>%
+          addPolygons(data=shape,
+                      fillColor = ~pal(output.pred),
+                      weight = 2,
+                      opacity = 1,
+                      color = "white",
+                      dashArray = "3",
+                      fillOpacity = 0.7) %>%
+          addLegend(pal = pal, values = shape$output.pred, opacity = 0.7, title = title.leg,
+                    position = "bottomright")
+      }
     }
     
-    prev <- read.csv("temp_table.csv")
-    
-    getshp <- list.files(dir, pattern="*.shp", full.names=TRUE)
-    shape<-readShapePoly(getshp)
-    
-    leaflet() %>% 
-      addProviderTiles("OpenStreetMap.HOT") %>% 
-      setView(lng = 32.5825, lat = 0.3476, zoom = 8) %>%
-      addPolygons(data=shape,fillOpacity = 0,weight=1.5) 
   })
+  
     
 }

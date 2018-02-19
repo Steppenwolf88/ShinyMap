@@ -43,11 +43,13 @@ fluidPage(
                   '.prj'
                 ), multiple = TRUE
       ),
+      selectInput("pred", "Target of prediction:", 
+                  choices=c("None","Prevalence","Exceedance probabilities")),
       downloadButton("Prediction_results.xls", "Download")
     ),
     mainPanel(
       tableOutput('contents'),
-      leafletOutput('SHPplot')
+      leafletOutput('SHPplot',height = 800)
     )
   )
 )
