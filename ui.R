@@ -43,6 +43,7 @@ fluidPage(
                   '.prj'
                 ), multiple = TRUE
       ),
+      checkboxInput("locations", "Show empirical prevalence", FALSE),
       selectInput("pred", "Target of prediction:", 
                   choices=c("None","Prevalence","Exceedance probabilities")),
       downloadButton("Prediction_results.xls", "Download")

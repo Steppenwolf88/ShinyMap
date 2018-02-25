@@ -190,5 +190,34 @@ function(input, output) {
     
   })
   
+  observe({
+    inFile <- input$file1
+    if(length(inFile)>0) {
+      data.new <- read.csv(inFile$datapath, header = TRUE)
+    
+      data.new$Prev <- data.new$Pf/data.new$Ex
+      proxy <- leafletProxy("SHPplot", data = data.new)
+    
+      bins <- seq(0,1,0.1)
+      pal.prev <- colorBin("YlOrRd", domain = data.new$Prev, bins = bins)
+    
+  
+      proxy %>% clearMarkers() %>% clearControls()
+      if (input$locations) {
+        proxy %>% addCircleMarkers(
+          data=data.new,
+          color = ~pal.prev(Prev),
+          radius=15*data.new$Prev,
+          stroke = FALSE,
+          fillOpacity=1,
+        )  %>% 
+        addLegend(pal = pal.prev, values = data.new$Prev, position="topright",
+                  title="Empirical prevalence",opacity=1)
+        
+      
+      }
+    }
+  })
+  
     
 }
